@@ -1,0 +1,350 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Web;
+@using System.Web.Mvc;
+@using TheEndOfRestaurrant.Models;
+@using System.Web.Script.Serialization;
+@{var context = new RestaurantFilesEntities5();
+
+    var mylist = Request.Cookies.Get("Orders");
+    List<Order> list1 = new List<Order>();
+    if (mylist == null)
+    {
+        HttpCookie Secured = new HttpCookie("Orders", new JavaScriptSerializer().Serialize(list1));
+        Response.Cookies.Set(Secured);
+    }
+    var currenrlist1 = new JavaScriptSerializer().Deserialize<List<Order>>(Request.Cookies.Get("Orders").Value);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Title -->
+    <title>Soup - Restaurant with Online Ordering System Template</title>
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="~/assets/img/favicon.png">
+    <link rel="apple-touch-icon" href="~/assets/img/favicon_60x60.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/assets/img/favicon_76x76.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="~/assets/img/favicon_120x120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="~/assets/img/favicon_152x152.png">
+    <!-- CSS Plugins -->
+    <link rel="stylesheet" href="~/assets/plugins/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/slick-carousel/slick/slick.css" />
+    <link rel="stylesheet" href="~/assets/plugins/animate.css/animate.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/animsition/dist/css/animsition.min.css" />
+    <!-- CSS Icons -->
+    <link rel="stylesheet" href="~/assets/css/themify-icons.css" />
+    <link rel="stylesheet" href="~/assets/plugins/font-awesome/css/font-awesome.min.css" />
+    <!-- CSS Theme -->
+    <link id="theme" rel="stylesheet" href="~/assets/css/themes/theme-beige.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $(".btn12").click(function () {
+                let btnVal = $(this).attr('id');
+                console.log(btnVal);
+                $.post("/Ajax/FirstAjax",
+                    { ID: parseInt(btnVal) })
+                    .done(function (object1) {
+                        let name = "#" + btnVal + "amount";
+                        let name2 = "#" + btnVal + "amountPrice";
+                        $(name).val(object1.amount3);
+                        $(name2).val(object1.amountPrice3);
+                        $("#FullPrice2").html(object1.FullPrice);
+                        $("#cartPrice").html(object1.FullPrice);
+                        $("#Delivery").html(object1.DeliveryPrice);
+                    }).fail(function () {
+                        console.log('fail');
+                    });
+            });
+            $(".btn13").click(function () {
+                let btnVal = $(this).val();
+                console.log(btnVal);
+                $.post("/Ajax/SecondAjax",
+                    { ID: parseInt(btnVal) })
+                    .done(function (object1) {
+                        let name = "#" + btnVal + "amount";
+                        let name2 = "#" + btnVal + "amountPrice";
+                        $(name).val(object1.amount3);
+                        $(name2).val(object1.amountPrice3);
+                        $("#FullPrice2").html(object1.FullPrice);
+                        $("#cartPrice").html(object1.FullPrice);
+                        $("#Delivery").html(object1.DeliveryPrice);
+                    }).fail(function () {
+                        console.log('fail');
+                    });
+            });
+            $(".btn-remove").click(function () {
+                let btnVal = $(this).val();
+                $.post("/Cart/RemoveItem", { id: parseInt(btnVal) })
+                    .done(function (Delete) {
+                        let nameoftr="#"+btnVal+"no";
+                        $(nameoftr).remove();
+                        $("#FullPrice2").html(Delete.AmountPrice);
+                        $("#cartPrice").html(Delete.AmountPrice);
+                        $("#Delivery").html(Delete.Delivery);
+                        $("#Amount1").html(Delete.Count);
+                    });
+            });
+        });
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+    </script>
+    <!-- Body Wrapper -->
+    <div id="body-wrapper" class="animsition">
+        <!-- Header -->
+        <header id="header" class="light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <!-- Logo -->
+                        <div class="module module-logo dark">
+                            <a href="~/Home">
+                                <h2 style="font-weight:bold">Exclusive</h2>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-7" style="">
+                        <!-- Navigation -->
+                        <nav class="module module-navigation left mr-4">
+                            <ul id="nav-main" class="nav nav-main" style="font-weight:bold;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                                <li class="has-dropdown">
+                                <li style="margin-right:15px"><a href="~/Home">Домой</a></li>
+                                <li style="margin-right:15px"><a href="~/Home/CattegoryFoods">Меню</a></li>
+                                <li class="has-dropdown" style="margin-right:15px">
+                                    <a href="#">О нас</a>
+                                    <div class="dropdown-container">
+                                        <ul class="dropdown-mega">
+                                            <li><a href="~/About/AboutIndex">О Нас</a></li>
+                                            <li><a href="~/About/AboutServices">Мероприятия</a></li>
+                                            <li><a href="~/About/Gallery">Галерея</a></li>
+                                        </ul>
+                                        <div class="dropdown-image">
+                                            <img src="~/assets/img/photos/dropdown-about.jpg" alt="">
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="has-dropdown">
+                                <li class="has-dropdown">
+
+                                <li style="margin-right:15px;margin-left:0px"><a href="~/Offers/OffersView">Акции</a></li>
+                                <li style="margin-right:15px"><a href="~/Contacts/ContactUS">Контакты</a></li>
+                                <li class="has-dropdown">
+                                    <a href="#">More</a>
+                                    <div class="dropdown-container">
+                                        <ul class="dropdown-mega">
+                                            <li><a href="~/CheckOut/CheckOutView">Заказы</a></li>
+                                            <li><a href="~/Developer/AboutDeveloper">О разработчике</a></li>
+                                        </ul>
+                                        <div class="dropdown-image">
+                                            <img src="~/assets/img/photos/dropdown-more.jpg" alt="">
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="module left">
+                            <a href="~/CheckOut/CheckOutView" class="btn btn-outline-secondary" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-weight:bold;margin-right:20px"><span>Заказать</span></a>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <a href="#" class="module module-cart right" data-toggle="panel-cart">
+                            <span class="cart-icon">
+                                <i class="ti ti-shopping-cart"></i>
+                                @{int Amount = 0; double FullPrice = 0; double PriceWithDelivery = 0;}
+                                @foreach (var item in currenrlist1)
+                                {
+                                    Amount += 1;
+                                    FullPrice += item.Price * item.Amount;
+                                }
+                                @{PriceWithDelivery = FullPrice + (FullPrice * 0.1); }
+                                <span id="Amount1" class="notification">@Amount</span>
+                            </span>
+                            <span id="cartPrice" class="cart-value">@FullPrice </span><label style="font-size:18px">c</label>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Header / End -->
+        <!-- Header -->
+        <header id="header-mobile" class="light">
+            <div class="module module-nav-toggle">
+                <a href="#" id="nav-toggle" data-toggle="panel-mobile"><span></span><span></span><span></span><span></span></a>
+            </div>
+            <div class="module module-logo">
+                <a href="index.html">
+                    <img src="~/assets/img/logo-horizontal-dark.svg" alt="">
+                </a>
+            </div>
+            <a href="#" class="module module-cart" data-toggle="panel-cart">
+                <i class="ti ti-shopping-cart"></i>
+                <span class="notification"></span>
+            </a>
+        </header>
+        <!-- Header / End -->
+        <!-- Content / End -->
+        <!-- Panel Cart -->
+        <div id="panel-cart"style="width:auto">
+            <div class="panel-cart embed-responsive">
+                <div class="panel-cart-title">
+                    <h5 class="title">Ваша Корзина</h5>
+                    <button class="close" data-toggle="panel-cart"><i class="ti ti-close"></i></button>
+                </div>
+                <div class="panel-cart-content" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                    <div style="overflow-y: scroll; height:340px">
+                        <table class="table table-responsive"id="OrdersTable">
+                            @{int id = 0;}
+                            
+                            @foreach (var item in currenrlist1)
+                            {
+                                string id1 = item.ID + "amount"; string id2 = item.ID + "amountPrice"; string idangry = item.ID.ToString();string id4 = item.ID + "no";
+                                <tr id="@id4">
+                                    <td class="title">
+                                            <span class="name"><a style="font-size:14px;" href="#productModal" data-toggle="modal">@item.Name</a></span>
+                                    </td>
+                                    <td style="padding:0px;width:53px"><input readonly="readonly" style="font-size:12px;border:none;width:45px" type="number" value="@item.AmountPrice" id="@id2" name="@id2" /><label style="font-size:13px;margin:0px">c</label></td>
+                                    <td class="actions"style="padding:0px">
+                                        <button style="height:30px;min-width:10px; height:30px;width:25px;padding:0px;padding-right:30px;margin-left:7px" id="@item.ID" class="action-icon btn btn12"><i class="ti ti-plus"></i></button>
+                                        <input readonly="readonly" style="width:35px;font-size:12px;height:30px;border:none;" type="number" value="@item.Amount" id="@id1" name="@id1" />
+                                        <button style="min-width:10px; height:30px;width:25px;padding:0px" class="btn btn13 action-icon"  value="@idangry"><i class="ti ti-minus"></i></button>
+                                        <button  style="height:30px;width:30px;padding:0px" value="@item.ID"  class="action-icon btn btn-remove"><i class="ti ti-close"></i></button>
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+                    </div>
+                    <div class="cart-summary">
+                    <div class="row">
+                        <div class="col-7 text-right text-muted">Цена Заказа:</div>
+                        <div class="col-5"><strong id="FullPrice2">@FullPrice</strong><label  style="margin-left:5px">с</label></div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-7 text-right text-muted">Доставка:</div>
+                        <div class="col-5"><strong>10 %</strong></div>
+                    </div>
+                    <div class="row text-lg">
+                        <div class="col-7 text-right text-muted">Итог:</div>
+                        <div class="col-5"><strong id="Delivery">@PriceWithDelivery</strong><label style="margin-left:5px">с</label></div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <a href="~/CheckOut/CheckOutView" class="panel-cart-action btn btn-secondary btn-block btn-lg"><span>Сделать Заказ</span></a>
+        </div>
+        <!-- Panel Mobile -->
+        <nav id="panel-mobile">
+            <div class="module module-logo bg-dark dark">
+                <a href="#">
+                    <img src="~/assets/img/logo-light.svg" alt="" width="88">
+                </a>
+                <button class="close" data-toggle="panel-mobile"><i class="ti ti-close"></i></button>
+            </div>
+            <nav class="module module-navigation"></nav>
+            <div class="module module-social">
+                <h6 class="text-sm mb-3">Follow Us!</h6>
+                <a href="#" class="icon icon-social icon-circle icon-sm icon-facebook"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="icon icon-social icon-circle icon-sm icon-google"><i class="fa fa-google"></i></a>
+                <a href="#" class="icon icon-social icon-circle icon-sm icon-twitter"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="icon icon-social icon-circle icon-sm icon-youtube"><i class="fa fa-youtube"></i></a>
+                <a href="#" class="icon icon-social icon-circle icon-sm icon-instagram"><i class="fa fa-instagram"></i></a>
+            </div>
+        </nav>
+        <!-- Body Overlay -->
+        <div id="body-overlay"></div>
+    </div>
+    <!-- Modal / Product -->
+    @RenderBody();
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts11", required: false)
+    <script src="~/Scripts/ActionButtons.js"></script>
+    <footer id="footer" class="bg-dark dark">
+        @Html.Partial("_LoginPartial")
+        @RenderSection("scripts", required: false)
+        @if (User.IsInRole("Admin"))
+        {
+            <span><a href="~/Items/Items">Admin</a></span>
+        }
+        <div class="container">
+            <!-- Footer 1st Row -->
+            <div class="footer-first-row row">
+                <div class="col-lg-3 text-center">
+                    <a href="index.html"><h2 style="font-weight:bold">Exclusive</h2></a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="text-muted">Новости от Exclusive</h5>
+                    <ul class="list-posts">
+                        <li>
+                            <a href="#" class="title">Новый Вебсайт от Exclusive</a>
+                            <span class="date">February 14, 2020</span>
+                        </li>
+                        <li>
+                            <a href="#" class="title">Новый Вебсайт от Exclusive</a>
+                            <span class="date">February 14, 2020</span>
+                        </li>
+                        <li>
+                            <a style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" href="http://localhost:54691/Developer/AboutDeveloper" class="title">Разработчик Сайта Бахриев Шахзод Контакты:918500015</a>
+                            <span class="date">February 14, 2020</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <h5 class="text-muted">Subscribe Us!</h5>
+                    <!-- MailChimp Form -->
+                    <form action="//suelo.us12.list-manage.com/subscribe/post-json?u=ed47dbfe167d906f2bc46a01b&amp;id=24ac8a22ad" id="sign-up-form" class="sign-up-form validate-form mb-3" method="POST">
+                        <div class="input-group">
+                            <input name="EMAIL" id="mce-EMAIL" type="email" class="form-control" placeholder="Tap your e-mail..." required>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary btn-submit" type="submit">
+                                    <span class="description">Subscribe</span>
+                                    <span class="success">
+                                        <svg x="0px" y="0px" viewBox="0 0 32 32"><path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11" /></svg>
+                                    </span>
+                                    <span class="error">Try again...</span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                    <h5 class="text-muted mb-3">Social Media</h5>
+                    <a href="#" class="icon icon-social icon-circle icon-sm icon-facebook"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="icon icon-social icon-circle icon-sm icon-google"><i class="fa fa-google"></i></a>
+                    <a href="#" class="icon icon-social icon-circle icon-sm icon-twitter"><i class="fa fa-twitter"></i></a>
+                    <a href="#" class="icon icon-social icon-circle icon-sm icon-youtube"><i class="fa fa-youtube"></i></a>
+                    <a href="#" class="icon icon-social icon-circle icon-sm icon-instagram"><i class="fa fa-instagram"></i></a>
+                </div>
+            </div>
+            <!-- Footer 2nd Row -->
+        </div>
+        <!-- Back To Top -->
+        <a href="#" id="back-to-top"><i class="ti ti-angle-up"></i></a>
+    </footer>
+    <!-- JS Plugins -->
+    <script src="~/assets/plugins/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/plugins/tether/dist/js/tether.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/assets/plugins/slick-carousel/slick/slick.min.js"></script>
+    <script src="~/assets/plugins/jquery.appear/jquery.appear.js"></script>
+    <script src="~/assets/plugins/jquery.scrollto/jquery.scrollTo.min.js"></script>
+    <script src="~/assets/plugins/jquery.localscroll/jquery.localScroll.min.js"></script>
+    <script src="~/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/assets/plugins/jquery.mb.ytplayer/dist/jquery.mb.YTPlayer.min.js"></script>
+    <script src="~/assets/plugins/twitter-fetcher/js/twitterFetcher_min.js"></script>
+    <script src="~/assets/plugins/skrollr/dist/skrollr.min.js"></script>
+    <script src="~/assets/plugins/animsition/dist/js/animsition.min.js"></script>
+    <!-- JS Core -->
+    <script src="~/assets/js/core.js"></script>
+</body>
+</html>

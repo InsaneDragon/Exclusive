@@ -1,0 +1,352 @@
+﻿<head>
+    <style>
+        #snackbar {
+            visibility: hidden; /* Hidden by default. Visible on click */
+            min-width: 250px; /* Set a default minimum width */
+            margin-left: -125px; /* Divide value of min-width by 2 */
+            background-color: green; /* Black background color */
+            color: #fff; /* White text color */
+            text-align: center; /* Centered text */
+            border-radius: 2px; /* Rounded borders */
+            padding: 16px; /* Padding */
+            position: fixed; /* Sit on top of the screen */
+            z-index: 1; /* Add a z-index if needed */
+            left: 50%; /* Center the snackbar */
+            bottom: 30px; /* 30px from the bottom */
+            font-size: 15px;
+    </style>
+</head>
+<script>
+    function Plus(id) {
+        let btnVal = id;
+        console.log(btnVal);
+        $.post("/Ajax/FirstAjax",
+            { ID: btnVal })
+            .done(function (object1) {
+                let id1 = "#" + btnVal + "amount"; let id2 = "#" + btnVal + "amountPrice";
+                $(id1).val(object1.amount3);
+                $(id2).val(object1.amountPrice3);
+                $("#cartPrice").html(object1.FullPrice);
+                $("#FullPrice2").html(object1.FullPrice);
+                $("#Delivery").html(object1.DeliveryPrice);
+            }).fail(function () {
+                console.log('fail');
+            });
+    }
+    function Minus(id) {
+        let btnVal = id;
+        console.log(btnVal);
+        $.post("/Ajax/SecondAjax",
+            { ID: btnVal })
+            .done(function (object1) {
+                let id1 = "#" + btnVal + "amount"; let id2 = "#" + btnVal + "amountPrice";
+                $(id1).val(object1.amount3);
+                $(id2).val(object1.amountPrice3);
+                $("#FullPrice2").html(object1.FullPrice);
+                $("#cartPrice").html(object1.FullPrice);
+                $("#Delivery").html(object1.DeliveryPrice);
+
+            }).fail(function () {
+                console.log('fail');
+            });
+    }
+    function Delete(id) {
+        debugger;
+        let btnVal = id;
+        $.post("/Cart/RemoveItem", { id: id })
+            .done(function (Delete) {
+                let nameoftr = "#" + id + "no";
+                $(nameoftr).remove();
+                $("#FullPrice2").html(Delete.AmountPrice);
+                $("#cartPrice").html(Delete.AmountPrice);
+                $("#Delivery").html(Delete.Delivery);
+                $("#Amount1").html(Delete.Count);
+            });
+    }
+    function OrderNow() {
+        function DeleteAlert() {
+            $('#snackbar').css({ 'visibility': 'hidden' })
+        }
+        $.post('/Cart/AddFish').done(function (Current) {
+            if (Current.result1 == "Yes") {
+                let id1 = Current.ID + "amount"; let id2 = Current.ID + "amountPrice"; let idangry = Current.ID; let id4 = Current.ID + "no";
+                let p = Current.ID + "Mo";
+                let q = Current.ID + "no";
+                let a = $("#Amount1").html();
+                a++;
+                $("#Amount1").html(a);
+                let b = parseInt($("#cartPrice").html());
+                b += 85;
+                $("#cartPrice").html(b);
+                $("#OrdersTable").append("<tr id=" + q + "><td  class=title><span style=font-size:15px; class=name><a href=#productModal data-toggle=modal>Классический стейк из сёмги</a></span><td style=padding:0px><input readonly=readonly style=width:35px;font-size:12px;text-align:center;border:none; type=number value=" +85+ " " + "id=" + id2 + " " + "name=" + id2 + "/><label style=font-size:13px>c</label></td><td style=padding:0px class=actions><button onclick=Plus(" + Current.ID + ") class=btn  style=width:30px;height:30px;padding:0px;padding-right:30px;padding-left:10px id=" + Current.ID + "><i class=ti-plus></i></button><input readonly=readonly style=width:30px;font-size:12px;text-align:center;border:none; type=number value=" + 1 + " " + "id=" + id1 + " " + "name=" + id1 + "/><button style=min-width:10px;width:30px;height:30px;padding:0px id=" + p + " " + "class=btn onclick=Minus(" + Current.ID + ")  value=" + idangry + "><i class=ti-minus></i></button style=width:20px><button onclick=Delete(" + Current.ID + ") class=action-icon style=border:none; value=" + Current.ID + ">" + "<i class=ti-close></i></button></td></tr>")
+                let x = $('#snackbar');
+                $('#snackbar').css({ 'visibility': 'visible', 'background-color': 'limegreen' });
+                let er = "В вашу Корзину былa добавленa: " + "Стейк из Сёмги";
+                $('#snackbar').html(er);
+                setTimeout(DeleteAlert, 5000)
+            }
+            else {
+                let x = $('#snackbar');
+                $('#snackbar').css({ 'visibility': 'visible', 'background-color': 'red' });
+                let er1 = "Это уже есть в Вашей Корзине!";
+                $('#snackbar').html(er1);
+                setTimeout(DeleteAlert, 5000) 
+            }
+        })
+    };
+</script>
+<div id="content">
+    <!-- Section - Main -->
+    <section class="section section-main section-main-1 bg-light">
+        <div id="snackbar">
+        </div>
+        <div class="container dark">
+            <div class="slide-container">
+                <div id="section-main-1-carousel-image" class="image inner-controls">
+                    <div class="slide"><div class="bg-image"><img src="~/Content/Pictures/stake2.jpg" alt=""></div></div>
+                    <div class="slide"><div class="bg-image"><img src="~/assets/img/photos/slider-burger.jpg" alt=""></div></div>
+                    <div class="slide"><div class="bg-image"><img src="~/assets/img/photos/slider-dessert.jpg" alt=""></div></div>
+                </div>
+                <div class="content dark">
+                    <div id="section-main-1-carousel-content">
+                        <div class="content-inner">
+                            <h4 class="text-muted">Блюдо Сезона!</h4>
+                            <h1>Стейк из Сёмги</h1>
+                            <div class="btn-group">
+                                <button style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" onclick="OrderNow()" data-toggle="modal" class="btn btn-outline-primary btn-lg"><span>Заказать Сейчас</span></button>
+                                <span style="font-weight:bold;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" class="price price-lg">от 84.99с</span>
+                            </div>
+                        </div>
+                        <div class="content-inner">
+                            <h1>Получи Скидку 10%</h1>
+                            <h5 class="text-muted mb-5">Только в Пятницу!</h5>
+                            <a href="~/Offers/OffersView" class="btn btn-outline-primary btn-lg"><span>Подробнее...</span></a>
+
+                        </div>
+                        <div class="content-inner">
+                            <h1>Вкусные Дессерты</h1>
+                            <h5 class="text-muted mb-5">Закажи Хоть Прямо Сейчас!</h5>
+                            <a href="~/Home/CattegoryFoods#Dessert" class="btn btn-outline-primary btn-lg"><span>Закажи сейчас!</span></a>
+                        </div>
+                    </div>
+                    <nav class="content-nav">
+                        <a class="prev" href="#"><i class="ti-arrow-left"></i></a>
+                        <a class="next" href="#"><i class="ti-arrow-right"></i></a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section - About -->
+    <section class="section section-bg-edge">
+        <div class="image right col-md-6 push-md-6">
+            <div class="bg-image"><img src="~/assets/img/photos/bg-food.jpg" alt=""></div>
+        </div>
+
+        <div class="container">
+            <div class="col-lg-5 col-md-9">
+                <div class="rate mb-5 rate-lg"><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star"></i></div>
+                <h1>Лучшая Еда в Душанбе</h1>
+                <p class="lead text-muted mb-5"></p>
+                <div class="blockquotes">
+                    <!-- Blockquote -->
+                    <blockquote class="blockquote light animated" data-animation="fadeInLeft">
+                        <div class="blockquote-content">
+                            <div class="rate rate-sm mb-3"><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star"></i></div>
+                            <p>Провёл Замечательный Ужин Мне Понравилось!</p>
+                        </div>
+                        <footer>
+                            <img src="~/assets/img/avatars/avatar02.jpg" alt="">
+                            <span class="name">Mark Johnson<span class="text-muted">, Google</span></span>
+                        </footer>
+                    </blockquote>
+                    <!-- Blockquote -->
+                    <blockquote class="blockquote animated" data-animation="fadeInRight" data-animation-delay="300">
+                        <div class="blockquote-content dark">
+                            <div class="rate rate-sm mb-3"><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star active"></i><i class="fa fa-star"></i></div>
+                            <p>Вкусная Еда и Приятная Атмосфера</p>
+                        </div>
+                        <footer>
+                            <img src="~/assets/img/avatars/avatar01.jpg" alt="">
+                            <span class="name">Kate Hudson<span class="text-muted">, LinkedIn</span></span>
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section - Steps -->
+    <section class="section section-extended right dark">
+        <div class="container bg-dark">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Step -->
+                    <div class="feature feature-1 mb-md-0">
+                        <div class="feature-icon icon icon-primary"><i class="ti ti-shopping-cart"></i></div>
+                        <div class="feature-content">
+                            <h4 class="mb-2"><a href="menu-list-collapse.html">Выбрать</a></h4>
+                            <p class="text-muted mb-0">У нас огромное Выбор Блюд</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <!-- Step -->
+                    <div class="feature feature-1 mb-md-0">
+                        <div class="feature-icon icon icon-primary"><i class="ti ti-wallet"></i></div>
+                        <div class="feature-content">
+                            <h4 class="mb-2">Заказать</h4>
+                            <p class="text-muted mb-0">Примите Заказ Указав Адресс и ваши номера</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <!-- Step -->
+                    <div class="feature feature-1 mb-md-0">
+                        <div class="feature-icon icon icon-primary"><i class="ti ti-package"></i></div>
+                        <div class="feature-content">
+                            <h4 class="mb-2">Получите Еду!</h4>
+                            <p class="text-muted mb-3">В конечном итоге вы получите свой Заказ!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section - Menu -->
+    <section class="section pb-0 protrude">
+        <div class="container">
+            <h1 class="mb-6">Наше Меню</h1>
+        </div>
+        <div class="menu-sample-carousel carousel inner-controls" data-slick='{
+                "dots": true,
+                "slidesToShow": 3,
+                "slidesToScroll": 1,
+                "infinite": true,
+                "responsive": [
+                    {
+                        "breakpoint": 991,
+                        "settings": {
+                            "slidesToShow": 2,
+                            "slidesToScroll": 1
+                        }
+                    },
+                    {
+                        "breakpoint": 690,
+                        "settings": {
+                            "slidesToShow": 1,
+                            "slidesToScroll": 1
+                        }
+                    }
+                ]
+            }'>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Salad">
+                    <img src="~/Content/Pictures/salad.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Салаты</h5>
+                </a>
+            </div>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Zakuski">
+                    <img src="~/Content/Pictures/zakuski.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Закуски</h5>
+                </a>
+            </div>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Soup">
+                    <img src="~/Content/Pictures/soup.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Супы</h5>
+                </a>
+            </div>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Main_Dish">
+                    <img src="~/Content/Pictures/main dish.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Главное Блюдо</h5>
+                </a>
+            </div>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Fish">
+                    <img src="~/Content/Pictures/fish2.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Рыба</h5>
+                </a>
+            </div>
+            <!-- Menu Sample -->
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Pasta">
+                    <img src="~/Content/Pictures/pasta.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Паста</h5>
+                </a>
+            </div>
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#BBQ">
+                    <img src="~/Content/Pictures/BBQ.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Гриль BBQ</h5>
+                </a>
+            </div>
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Garnir">
+                    <img src="~/Content/Pictures/garnir.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Гарниры</h5>
+                </a>
+            </div>
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Bakery">
+                    <img src="~/Content/Pictures/bakery.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Хлебные Изделия</h5>
+                </a>
+            </div>
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Desserts">
+                    <img src="~/assets/img/photos/menu-title-desserts.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Дессерты</h5>
+                </a>
+            </div>
+            <div class="menu-sample">
+                <a href="~/Home/CattegoryFoods#Drinks">
+                    <img src="~/assets/img/photos/menu-title-drinks.jpg" alt="" class="image" style="height:375px">
+                    <h5 class="title">Напитки</h5>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- Section - Offers -->
+    <section class="section bg-light">
+        <div class="page-content bg-light">
+            <div class="container">
+                <!-- Special Offer -->
+                <div class="special-offer mb-5 animated fadeIn visible" data-animation="fadeIn">
+                    <img src="~/assets/img/photos/special-dish.jpg" alt="" class="special-offer-image">
+                    <div class="special-offer-content">
+                        <h2 class="mb-2">Прибыльная Пятница</h2>
+                        <h5 class="text-muted mb-5">10% скидка на все заказы</h5>
+                        <ul class="list-check text-lg mb-0">
+                            <li>Только в Пятницу</li>
+                            <li>Все Заказы</li>
+                            <li>Заказать с сайта</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section -->
+    <section class="section section-lg dark bg-dark">
+        <!-- BG Image -->
+        <div class="bg-image bg-parallax"><img src="~/assets/img/photos/bg-croissant.jpg" alt=""></div>
+
+        <div class="container text-center">
+            <div class="col-lg-8 push-lg-2">
+                <h2 class="mb-3">Check our promo video!</h2>
+                <h5 class="text-muted">Book a table even right now or make an online order!</h5>
+                <button class="btn-play" data-toggle="video-modal" data-target="#modalVideo" data-video="https://www.youtube.com/embed/uVju5--RqtY"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- Footer / End -->
+</div>

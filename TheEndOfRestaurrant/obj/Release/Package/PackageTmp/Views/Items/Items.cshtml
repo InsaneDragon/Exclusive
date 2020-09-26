@@ -1,0 +1,94 @@
+﻿@model TheEndOfRestaurrant.Controllers.toOne
+<head>
+    <style>
+        label {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        .off {
+            width: 50%;
+        }
+    </style>
+
+</head>
+<body>
+    </br>
+    </br>
+    </br>
+    </br>
+    </br>
+    <div class="container text-center" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+        <h2>Заказы</h2>
+        </br>
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <td>Удаление</td>
+                    <td>ID</td>
+                    <td>Заказы</td>
+                    <td>Цена</td>
+                    <td>Номер Телефона</td>
+                    <td>Адресс</td>
+                    <td>Имя Фамилия</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.list)
+                {
+                    <tr id="@item.ID">
+                        <td><button id="@item.Name" onclick="DeleteTd('@item.Name')" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" class="btn">Удалить</button></td>
+                        <td>@item.ID</td>
+                        <td>@item.Name</td>
+                        <td>@item.Price</td>
+                        <td>@item.PhoneNumber</td>
+                        <td>@item.Adress</td>
+                        <td>@item.Person</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <hr />
+    </br>
+    </br>
+    </br>
+    </br>
+    </br>
+    @using (Html.BeginForm("AddItem", "Items", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <label>Здесь вы можете добадить Блюдо</label>
+        <br />
+        <br />
+        <input type="text" name="Name" placeholder="Имя" class="form-control off"required="required" />
+        <br />
+        <input type="number" name="Price" placeholder="Цена" class="form-control off"required="required" />
+        <br />
+        <input type="text" name="Description" placeholder="Описание" class="form-control off"required="required" />
+        <br />
+        <br />
+        @Html.DropDownList("ItemCategory", null, "-Выберите Категорию-", new { @class = "form-control off" })
+        <br />
+        <input type="submit" value="Добавить" class="form-control off btn-success" />
+    }
+    <br />
+    <br />
+    <form action="~/Items/DeleteItem">
+        <label style="font-weight:bold;font-size:15px">Имя</label>
+        <input type="text" class="form-control off" placeholder="Имя" name="product" id="product"required="required" />
+        <br />
+        <input type="submit" class="btn-danger form-control off" value="Удалить" />
+    </form>
+    <br />
+    <br />
+  
+</body>
+<script>
+          function DeleteTd(id) {
+              $.post("/Items/DeleteItem", { product: id }).done(function (deleteProductID) {
+                  let id = "#" + deleteProductID;
+                  $(id).remove();
+              })
+          }
+</script>
+

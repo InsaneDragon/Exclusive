@@ -1,0 +1,119 @@
+﻿@model TheEndOfRestaurrant.Controllers.toOne
+<head>
+    <style>
+        label {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        .off {
+            width: 50%;
+        }
+    </style>
+
+</head>
+<body>
+    <script>
+        var song = new Audio('/Songs/iphone_4g_message.mp3');
+        $(document).ready(function () {
+            setInterval(function () {
+                $.post("/Items/DBCHECK").done(function (list) {
+                    if (list != "Nothing") {
+                        $('#table-info').empty();
+                        for (let i = 0; i < list.length; i++) {
+                            $('#table-info').append(`<tr id=${list[i].ID}>   <td><button id="${list[i].Name}" onclick="DeleteTd('${list[i].Name}')" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" class="btn">Удалить</button></td><td>${list[i].ID}</td> <td>${list[i].Name}</td><td>${list[i].Price}</td><td>${list[i].PhoneNumber}</td><td>${list[i].Adress}</td><td>${list[i].Person}</td ></tr >`);
+                        }
+                        $('#table-info').append(`</tbody >`);
+                        $('#Modal').append('<div id="demoModal"data-toggle="modal" data-target="#demoModal" role="dialog"><div class="modal-dialog" role="document"> <div class="modal-content">Пришёл Заказ<div class="modal-header"><h4 class="modal-title" id="myModalLabel">Пришёл Заказ</h4> <button type="button" class="close"onclick="Stop()" aria-label="Close"><i class="ti-close"></i></button></div> <div class="modal-body">   </div>    <div class="modal-footer"><button type="button"onclick="Stop()" class="btn btn-dark">Close</button></div></div> </div></div>');
+                        song.play();
+                    }
+                });
+                console.log("Finished");
+            }, 10000);
+        });
+        function Stop() {
+            song.pause();
+            $('#Modal').empty();
+        }
+    </script>
+    </br>
+    </br>
+    </br>
+    </br>
+    </br>
+    <div class="container text-center" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+        <div id="Modal">
+        </div>
+        <h2>Заказы</h2>
+        </br>
+        <div>
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <td>Удаление</td>
+                        <td>ID</td>
+                        <td>Заказы</td>
+                        <td>Цена</td>
+                        <td>Номер Телефона</td>
+                        <td>Адресс</td>
+                        <td>Имя Фамилия</td>
+                    </tr>
+                </thead>
+                <tbody id="table-info">
+                    @foreach (var item in Model.list)
+                    {
+                        <tr id="@item.ID">
+                            <td><button id="@item.Name" onclick="DeleteTd('@item.Name')" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif" class="btn">Удалить</button></td>
+                            <td>@item.ID</td>
+                            <td>@item.Name</td>
+                            <td>@item.Price</td>
+                            <td>@item.PhoneNumber</td>
+                            <td>@item.Adress</td>
+                            <td>@item.Person</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <hr />
+        </br>
+        </br>
+        </br>
+        </br>
+        </br>
+        @using (Html.BeginForm("AddItem", "Items", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <label>Здесь вы можете добадить Блюдо</label>
+            <br />
+            <br />
+            <input type="text" name="Name" placeholder="Имя" class="form-control off" required="required" />
+            <br />
+            <input type="number" name="Price" placeholder="Цена" class="form-control off" required="required" />
+            <br />
+            <input type="text" name="Description" placeholder="Описание" class="form-control off" required="required" />
+            <br />
+            <br />
+            @Html.DropDownList("ItemCategory", null, "-Выберите Категорию-", new { @class = "form-control off" })
+            <br />
+            <input type="submit" value="Добавить" class="form-control off btn-success" />
+        }
+        <br />
+        <br />
+        <form action="~/Items/DeleteItem">
+            <label style="font-weight:bold;font-size:15px">Имя</label>
+            <input type="text" class="form-control off" placeholder="Имя" name="product" id="product" required="required" />
+            <br />
+            <input type="submit" class="btn-danger form-control off" value="Удалить" />
+        </form>
+        <br />
+        <br />
+
+</body>
+<script>
+    function DeleteTd(id) {
+        $.post("/Items/DeleteItem", { product: id }).done(function (deleteProductID) {
+            let id = "#" + deleteProductID;
+            $(id).remove();
+        })
+    }
+</script>

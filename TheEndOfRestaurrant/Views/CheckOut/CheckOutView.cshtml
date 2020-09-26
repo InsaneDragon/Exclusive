@@ -1,0 +1,129 @@
+﻿@using System.Collections.Generic;
+@using System.Web;
+@using TheEndOfRestaurrant.Models;
+@using System.Web.Script.Serialization;
+@{var context = new RestaurantFilesEntities5();
+    var mylist = Request.Cookies.Get("Orders");
+    List<Order> list1 = new List<Order>();
+    if (mylist == null)
+    {
+        HttpCookie Secured = new HttpCookie("Orders", new JavaScriptSerializer().Serialize(mylist));
+        Response.Cookies.Set(Secured);
+    }
+    var currenrlist1 = new JavaScriptSerializer().Deserialize<List<Order>>(Request.Cookies.Get("Orders").Value);
+}
+<body>
+    <div id="content">
+        <div class="page-title bg-dark dark">
+            <!-- BG Image -->
+            <div class="bg-image bg-parallax skrollable skrollable-between" data-top-bottom="background-position-y: 30%" data-bottom-top="background-position-y: 70%" background-position-y: 42.5029%;"><img src="~/assets/img/photos/bg-croissant.jpg" alt="" style="display: none;"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 push-lg-4">
+                        <h1 class="mb-0">Заказы</h1>
+                        <h4 class="text-muted mb-0">Некоторая Информация про наше Кафе</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="section bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-4 push-8">
+                        <div class="shadow bg-white stick-to-content mb-4">
+                            <div class="bg-dark dark p-4"><h5 class="mb-0">You order</h5></div>
+                            <div style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                                <table class="table-cart">
+                                    <tbody>
+                                        @foreach (var item in currenrlist1)
+                                        {
+                                            <tr>
+                                                <td class="title">
+                                                    <span class="name"><a data-toggle="modal">@item.Name</a></span>
+                                                </td>
+                                                <td class="price">@item.AmountPrice c</td>
+                                                <td>@item.Amount</td>
+                                            </tr>
+                                        }
+                                        @{int Amount = 0; double FullPrice = 0; double PriceWithDelivery = 0; double deliveryprice = 0;}
+                                        @foreach (var item in currenrlist1)
+                                        {
+                                            Amount += 1;
+                                            FullPrice += item.Price * item.Amount;
+                                        }
+                                        @{PriceWithDelivery = FullPrice + (FullPrice * 0.1); deliveryprice = (FullPrice * 0.1); }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="cart-summary" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                                <div class="row">
+                                    <div class="col-7 text-right text-muted">Стоимость:</div>
+                                    <div class="col-5"><strong>@FullPrice c</strong></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-7 text-right text-muted">Доставка:</div>
+                                    <div class="col-5"><strong>@deliveryprice c</strong></div>
+                                </div>
+                                <hr class="hr-sm">
+                                <div class="row text-md">
+                                    <div class="col-7 text-right text-muted">Всего:</div>
+                                    <div class="col-5"><strong>@PriceWithDelivery c</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="post" action='/Confirm/AddProduct'>
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="bg-white p-4 p-md-5 mb-4">
+                                <h4 class="border-bottom pb-4"><i class="ti ti-user mr-3 text-primary"></i>Ваша Информация</h4>
+                                <div class="row mb-5">
+                                    <div class="form-group col-sm-6">
+                                        <label>Имя:</label>
+                                        <input type="text" class="form-control" required="required" id="realname" name="realname">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label>Фамилия:</label>
+                                        <input type="text" class="form-control" required="required" id="surname" name="surname">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label>Улица и номер Дома/Квартиры:</label>
+                                        <input type="text" class="form-control" required="required" id="adress" name="adress">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label>Телефон:</label>
+                                        <input type="number" class="form-control" required="required" id="Phonenumber" name="Phonenumber">
+                                    </div>
+                                </div>
+                                <h4 class="border-bottom pb-4"><i class="ti ti-package mr-3 text-primary"></i>Доставка</h4>
+                                <div class="row mb-5">
+                                    <div class="form-group col-sm-6">
+                                        <label>Время Доставки:</label>
+                                        <div class="select-container">
+                                            <select class="form-control" name="Delivery">
+                                                <option>Быстрая Доставка</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h4 class="border-bottom pb-4"><i class="ti ti-wallet mr-3 text-primary"></i>Оплата</h4>
+                                <div class="row text-lg">
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label class="custom-control custom-radio">
+                                            <input type="radio" name="payment_type" class="custom-control-input">
+                                            <span class="custom-control-indicator"><svg class="icon" x="0px" y="0px" viewBox="0 0 32 32"><path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"></path></svg></span>
+                                            <span class="custom-control-description">Наличные</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg"><span>Заказать!</span></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>

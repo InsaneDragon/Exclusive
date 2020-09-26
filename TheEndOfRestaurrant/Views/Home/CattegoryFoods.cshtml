@@ -1,0 +1,450 @@
+﻿@using TheEndOfRestaurrant.Models;
+@model List<Item>
+<head>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <style>
+  #snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: green; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+  font-size:15px;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+    </style>
+</head>
+<body id="Body">
+    <script>
+        function Plus(id) {
+            let btnVal = id;
+            console.log(btnVal);
+            $.post("/Ajax/FirstAjax",
+                { ID: btnVal })
+                .done(function (object1) {
+                    let id1 = "#" + btnVal + "amount"; let id2 = "#" + btnVal + "amountPrice";
+                    $(id1).val(object1.amount3);
+                    $(id2).val(object1.amountPrice3);
+                    $("#cartPrice").html(object1.FullPrice);
+                    $("#FullPrice2").html(object1.FullPrice);
+                    $("#Delivery").html(object1.DeliveryPrice);
+                }).fail(function () {
+                    console.log('fail');
+                });
+        }
+        function Minus(id) {
+            let btnVal = id;
+            console.log(btnVal);
+            $.post("/Ajax/SecondAjax",
+                { ID: btnVal })
+                .done(function (object1) {
+                    let id1 = "#" + btnVal + "amount"; let id2 = "#" + btnVal + "amountPrice";
+                    $(id1).val(object1.amount3);
+                    $(id2).val(object1.amountPrice3);
+                    $("#FullPrice2").html(object1.FullPrice);
+                    $("#cartPrice").html(object1.FullPrice);
+                    $("#Delivery").html(object1.DeliveryPrice);
+
+                }).fail(function () {
+                    console.log('fail');
+                });
+        }
+        function Delete(id) {
+            debugger;
+            let btnVal = id;
+            $.post("/Cart/RemoveItem", { id: id })
+                .done(function (Delete) {
+                    let nameoftr = "#" + id + "no";
+                    $(nameoftr).remove();
+                    $("#FullPrice2").html(Delete.AmountPrice);
+                    $("#cartPrice").html(Delete.AmountPrice);
+                    $("#Delivery").html(Delete.Delivery);
+                    $("#Amount1").html(Delete.Count);
+                });
+        }
+        $(document).ready(function () {
+            $(".Add").click(function () {
+                let btnVal = $(this).attr('id');
+                $.post("/Home/AddProduct", { name: btnVal }).done(function (Current) {
+                        function DeleteAlert() {
+                            $('#snackbar').css({ 'visibility': 'hidden' })
+                        }
+                    if (Current != "NULL") {
+                        let id1 = Current.ID + "amount"; let id2 = Current.ID + "amountPrice"; let idangry = Current.ID; let id4 = Current.ID + "no";
+                        let p = Current.ID + "Mo";
+                        let q = Current.ID + "no";
+                        $("#OrdersTable").append("<tr id=" + q + "><td  class=title><span style=font-size:15px; class=name><a href=#productModal data-toggle=modal>" + btnVal + "</a></span><td style=padding:0px><input readonly=readonly style=width:45px;font-size:12px;text-align:center;border:none; type=number value=" + Current.AmountPrice + " " + "id=" + id2 + " " + "name=" + id2 + "/><label style=font-size:13px>c</label></td><td style=padding:0px class=actions><button onclick=Plus(" + Current.ID + ") class=btn  style=width:30px;height:30px;padding:0px;padding-right:30px;padding-left:10px id=" + Current.ID + "><i class=ti-plus></i></button><input readonly=readonly style=width:30px;font-size:12px;text-align:center;border:none; type=number value=" + Current.Amount + " " + "id=" + id1 + " " + "name=" + id1 + "/><button style=min-width:10px;width:30px;height:30px;padding:0px id=" + p + " " + "class=btn onclick=Minus(" + Current.ID + ")  value=" + idangry + "><i class=ti-minus></i></button style=width:20px><button onclick=Delete(" + Current.ID + ") class=action-icon style=border:none; value=" + Current.ID + ">" + "<i class=ti-close></i></button></td></tr>")
+                        let a = $("#Amount1").html();
+                        a++;
+                        $("#Amount1").html(a);
+                        $('#FullPrice2').html(Current.fullPrice);
+                        $('#Delivery').html(Current.Delivery);
+                        let b = parseInt($("#cartPrice").html());
+                        b += Current.Price;
+                        $("#cartPrice").html(b);
+                        let u = "#" + Current.ID;
+                        $(u).addClass("action-icon")
+                        let u1 = "#" + p;
+                        $(u1).addClass("action-icon")
+                        let u2 = "#" + q;
+                        $(u2).addClass("btn-remove ti")
+                        let x = $('#snackbar');
+                        $('#snackbar').css({ 'visibility': 'visible', 'background-color':'limegreen' });
+                        let er = "В вашу Корзину был добавлен: "+ btnVal;
+                        $('#snackbar').html(er);
+                        setTimeout(DeleteAlert,6000)
+
+                    }
+                    else {
+                        let x = $('#snackbar');
+                        $('#snackbar').css({ 'visibility': 'visible','background-color':'red'});
+                        let er1 = "Это уже есть в Вашей Корзине!";
+                        $('#snackbar').html(er1);
+                        setTimeout(DeleteAlert, 5000)
+                    }
+                });
+            });
+        });
+    </script>
+    <header id="header-mobile" class="light">
+        <div class="module module-nav-toggle">
+            <a href="#" id="nav-toggle" data-toggle="panel-mobile"><span></span><span></span><span></span><span></span></a>
+        </div>
+
+        <div class="module module-logo">
+            <a href="index.html">
+                <img src="~/assets/img/logo-horizontal-dark.svg" alt="">
+            </a>
+        </div>
+
+        <a href="#" class="module module-cart" data-toggle="panel-cart">
+            <i class="ti ti-shopping-cart"></i>
+        </a>
+    </header>
+    <div class="page-title bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 push-lg-4">
+                    <h1 class="mb-0">Наше Меню</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="snackbar">
+    </div>
+    <div class="page-content">
+        <div class="container">
+            <div class="row no-gutters">
+                <div class="col-md-10 push-md-1" role="tablist">
+                    <!-- Menu Category / Burgers -->
+                    <div id="Salad" class="menu-category">
+                        <div class="menu-category-title collapse-toggle collapsed" role="tab" data-target="#menuBurgersContent" data-toggle="collapse" aria-expanded="false">
+                            <div  class="bg-image" style=""><img src="~/Content/Pictures/salad.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Салаты</h2>
+                        </div>
+                        <div id="menuBurgersContent" class="menu-category-content collapse" aria-expanded="false" style="">
+                            <!-- Menu Item -->
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 2)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price с</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <!-- Menu Category / Pasta -->
+                    <div id="Zakuski" class="menu-category">
+                        <div class="menu-category-title collapse-toggle collapsed" role="tab" data-target="#menuPastaContent" data-toggle="collapse" aria-expanded="false">
+                            <div id="" class="bg-image" style=""><img src="~/Content/Pictures/zakuski.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Закуски</h2>
+                        </div>
+                        <div id="menuPastaContent" class="menu-category-content collapse" aria-expanded="false" style="">
+                            <!-- Menu Item -->
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 3)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Soup" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPizzaContent" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/soup.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Супы</h2>
+                        </div>
+                        <div id="menuPizzaContent" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 4)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Fish" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuSushiContent" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/fish.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Рыба</h2>
+                        </div>
+                        <div id="menuSushiContent" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 5)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Main_Dish" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta222Content" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/maindish.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Главное Блюдо</h2>
+                        </div>
+                        <div id="menuPasta222Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 1)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Pasta" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta2Content" data-toggle="collapse" aria-expanded="false">
+                            <div id="Pwerty233" class="bg-image" style=""><img src="~/Content/Pictures/pasta.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Паста</h2>
+                        </div>
+                        <div id="menuPasta2Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 6)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="BBQ" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta3Content" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/BBQ.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Гриль BBQ</h2>
+                        </div>
+                        <div id="menuPasta3Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 7)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Garnir" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta99Content" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/garnir.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Гарниры</h2>
+                        </div>
+                        <div id="menuPasta99Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 8)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Bakery" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta999Content" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/Content/Pictures/bakery.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Хлебные Изделия</h2>
+                        </div>
+                        <div id="menuPasta999Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 9)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Dessert" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta90Content" data-toggle="collapse" aria-expanded="false">
+                            <div  class="bg-image" style=""><img src="~/assets/img/photos/menu-title-desserts.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Дессерты</h2>
+                        </div>
+                        <div id="menuPasta90Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 10)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div id="Drinks" class="menu-category">
+                        <div class="menu-category-title collapse-toggle" role="tab" data-target="#menuPasta10Content" data-toggle="collapse" aria-expanded="false">
+                            <div class="bg-image" style=""><img src="~/assets/img/photos/menu-title-drinks.jpg" alt="" style="display: none;"></div>
+                            <h2 class="title">Напитки</h2>
+                        </div>
+                        <div id="menuPasta10Content" class="menu-category-content collapse">
+                            @foreach (var item in Model)
+                            {
+                                if (item.Categories == 11)
+                                {
+                                    <div class="menu-item menu-list-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-6 mb-2 mb-sm-0">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span class="text-muted text-sm">@item.Description</span>
+                                            </div>
+                                            <div class="col-sm-6 text-sm-right">
+                                                <span class="text-md mr-4"><span class="text-muted">от </span>@item.Price c</span>
+                                                <button id="@item.Name" class="btn btn-outline-secondary btn-sm Add" data-target="#productModal" data-toggle="modal"><span>Добавить в Корзину</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

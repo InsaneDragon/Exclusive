@@ -1,0 +1,57 @@
+﻿<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    </br>
+    <div class="col-lg-4 push-lg-1 col-md-6">
+        <img src="assets/img/logo-horizontal-dark.svg" alt="" class="mb-5" width="130">
+        <div style="margin-top:80px">
+            <h4 class="mb-0">Кафе&nbsp;&nbsp;"Exclusive"</h4>
+            <span class="text-muted"></span>
+        </div>
+        <hr class="hr-md">
+        <div class="row">
+            <div class="col-sm-6 mb-3 mb-sm-0" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:30px">
+                <h6 class="mb-1 text-muted">Номер Телефона:</h6>
+                918500015
+            </div>
+        </div>
+        <hr class="hr-md"><label style="font-weight:bold;font-size:30px;">Наше Местоположение</label>
+    </div>
+    <div id="map"></div>
+    <script>
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 38.584481, lng: 68.763032 },
+                zoom: 17
+            });
+            var goldenGatePosition = { lat: 38.584480, lng:68.762032};
+            var marker = new google.maps.Marker({
+                position: goldenGatePosition,
+                map: map,
+                label: 'Кафе Exclusive'
+            });
+
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgTSrpb6x_V2yIeLO0EQXYYoRvrXt8cPs&callback=initMap"
+            async defer></script>
+</body>
+</html>

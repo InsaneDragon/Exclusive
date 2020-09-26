@@ -1,0 +1,27 @@
+﻿@using TheEndOfRestaurrant.Models
+@model List<Order>
+
+<table class="table table-responsive table-hover table-striped border table-active table-dark">
+    @{double a = 0;}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><a style="margin-top:50%" href="~/Cart/RemoveItem?id=@item.ID"><img style="margin-top:50px" src="~/Content/Pictures/trashbin.png" /></a></td>
+            <td><img src=@item.Pic alt="..." style="width:300px;height:150px;border-radius:10%"></td>
+            <td><h3 style="font-weight:bold;margin-top:50%" class="text-center">@item.Name</h3></td>
+            <td style="vertical-align:middle"><a href="~/Cart/DeleteAmount?id=@item.ID" style="border-radius:5px;font-size:30px;margin-top:50px" class="btn-danger">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</a></td>
+            <td><label style="font-size:30px;margin-top:45px;font-weight:bold">@item.Amount</label></td>
+            <td style="vertical-align:middle"><a href="~/Cart/AddAmount?id=@item.ID" style="border-radius:5px;font-size:30px;" class="btn-success">&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;</a></td>
+            <td><label style=" font-size:25px;font-weight:bold;margin-top:50px; float:right">@item.AmountPrice с</label></td>
+            @{a += item.AmountPrice;
+            }
+        </tr>
+    }
+</table>
+<label style="font-size:50px;font-weight:bold;font-family:cursive;margin-left:40%">Итог: @a c</label>
+<form action="~/Confirm/Confirm">
+    <div style="display:flex;align-items:center;justify-content:center">
+        <input type="submit" value="Приобрести" class="btn-success text text-center" style="border-radius:5px;width:300px;height:50px;font-size:30px;font-weight:bold" />
+    </div>
+</form>
+

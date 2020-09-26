@@ -1,0 +1,24 @@
+﻿@using TheEndOfRestaurrant.Models
+@model List<Order>
+    <label style="font-size:44px;font-weight:bold">Вы Уверены что хотите приобрести всё из списка?</label>
+<table class="table table-responsive table-hover table-striped border">
+@foreach (var item in Model)
+{
+    <tr>
+        <td><img src=@item.Pic alt="..." style="width:300px;height:150px"></td>
+        <td><h3 style="font-weight:bold;margin-top:50%" class="text-center">@item.Name</h3></td>
+        <td><label style="font-size:30px;margin-top:45px;font-weight:bold;border:solid">&nbsp;@item.Amount&nbsp;</label></td>
+        <td><label style=" font-size:25px;font-weight:bold;margin-top:50px; float:right">@item.AmountPrice с</label></td>
+    </tr>
+}
+</table>
+<form action="~/Confirm/AddProduct">
+
+    <label style="font-size:15px;">Adress</label>
+    <input  type="text"placeholder="Adress"class="form-control"name="adress"id="adress"required="required" />
+    <label style="font-size:15px">PhoneNumber</label>
+    <br />
+    <input type="number" placeholder="PhoneNumber" class="form-control"name="Phonenumber"id="Phonenumber"required="required"  />
+    <br />
+    <input type="submit" value="Приобрести"class="btn-success form-control"/>
+</form>
